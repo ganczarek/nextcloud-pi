@@ -46,6 +46,12 @@
         backrefs: yes
       notify: restart sshd
 
+    - name: Refresh package database and perform system upgrade
+      become:
+      pacman:
+        update_cache: yes
+        upgrade: yes
+
   handlers:
     - name: restart sshd
       systemd:
