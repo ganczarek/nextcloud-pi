@@ -9,3 +9,9 @@
   systemd:
     name: mariadb
     state: restarted
+
+- name: restart php-fpm
+  become: yes
+  systemd:
+    name: pgp-fpm
+    state: restarted

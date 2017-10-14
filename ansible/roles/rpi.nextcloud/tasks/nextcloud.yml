@@ -3,7 +3,18 @@
   pacman:
     name: nextcloud
 
-- name: Enable PHP extensions for MySQL
+- name: Install PHP dependencies
+  become: yes
+  pacman:
+    name: "{{ item }}"
+  with_items:
+    - php-mcrypt
+    - php-intl
+    - php-gd
+    - php
+    - php-fpm
+
+- name: Enable PHP extensions
   become: yes
   lineinfile:
     dest: /etc/php/php.ini
@@ -14,3 +25,12 @@
   with_items:
     - pdo_mysql.so
     - mysqli.so
+    - gd.so
+  notify: restart php-fpm
+
+- name: Enable php-fpm
+  become: yes
+  systemd:
+    name: php-fpm
+    state: started
+    enabled: yes
