@@ -1,3 +1,5 @@
 *.tar.gz
 # don't commit a file with secrets
 ansible/vars/secrets.yml
+# Ansible retry files
+*.retry
