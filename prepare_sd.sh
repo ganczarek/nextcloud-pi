@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/usr/bin/env bash
 set -x -e
 
 DEV=/dev/mmcblk0
@@ -7,23 +7,15 @@ ROOT_PARTITION=${DEV}p2
 
 echo "Partition ${DEV}"
 sudo sfdisk ${DEV} <<EOF
-label: dos
-label-id: 0x74943e7a
-device: ${DEV}
-unit: sectors
-
-${BOOT_PARTITION} : start=        2048, size=      204800, type=c
-${ROOT_PARTITION} : start=      206848, size=    30724096, type=83
+,100M,c
+;
 EOF
-
-sync
 
 echo "Format boot partition ${BOOT_PARTITION}"
 sudo mkfs.vfat ${BOOT_PARTITION}
 
 echo "Format root patition ${ROOT_PARTITION}"
-sudo mkfs.ext4 -F ${ROOT_PARTITION}
-
+sudo mkfs.f2fs -f ${ROOT_PARTITION}
 
 mkdir -p root
 sudo mount ${ROOT_PARTITION} root
@@ -36,12 +28,15 @@ if [ ! -f ArchLinuxARM-rpi-2-latest.tar.gz ]; then
 fi
 sudo bsdtar -xpf ArchLinuxARM-rpi-2-latest.tar.gz -C root
 sync
-
 sudo mv root/boot/* boot
+sync
 
-cat ~/.ssh/rpi3_rsa.pub >> root/home/alarm/.ssh/authorized_keys
+sudo bash -c 'cat <<EOF >> root/etc/fstab
+/dev/mmcblk0p2  /       f2fs    defaults,noatime,discard    0   0
+tmpfs           /tmp    tmpfs   nodev,nosuid,size=2G    0   0
+EOF'
+
+sudo mkdir root/home/alarm/.ssh/
+sudo tee -a root/home/alarm/.ssh/authorized_keys < ~/.ssh/rpi3_rsa.pub
 
 sudo umount boot root
-
-
-
