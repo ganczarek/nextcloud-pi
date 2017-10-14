@@ -26,8 +26,9 @@
     mode: 0644
   notify: restart nginx
 
-- name: Enable nginx service
+- name: Enable and start nginx service
   become: yes
   systemd:
     name: nginx
     enabled: true
+    state: started
