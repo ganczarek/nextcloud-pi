@@ -2,12 +2,12 @@
 
 if [ "$1" = "init" ]; then
     # First Ansible run that installs Python, sudo, etc.
-    ansible-playbook --user alarm --inventory '192.168.1.80,' --key-file ~/.ssh/rpi3_rsa \
+    ansible-playbook --inventory 'rpi3,' \
         --become \
         --become-method su \
         --become-user root \
         --extra-vars ansible_become_pass=root \
         ./ansible/init.yml
 else
-    ansible-playbook --user alarm --inventory '192.168.1.80,' --key-file ~/.ssh/rpi3_rsa ./ansible/rpi.yml
+    ansible-playbook --inventory 'rpi3,' ./ansible/rpi.yml
 fi
