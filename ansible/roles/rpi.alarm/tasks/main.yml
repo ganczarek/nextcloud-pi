@@ -6,5 +6,20 @@
     - vim
     - htop
 
+- name: Configure locale
+  become: yes
+  locale_gen:
+    name: "{{ locale }}"
+    state: present
+
+- name: Set LANG and LC_ALL
+  become: yes
+  lineinfile:
+    path: /etc/profile
+    line: "{{ item }}"
+  with_items:
+    - "export LANG={{ locale }}"
+    - "export LC_ALL={{ locale }}"
+
 - name: Setup WiFI
   import_tasks: setup_wifi.yml
