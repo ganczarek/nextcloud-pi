@@ -3,6 +3,7 @@
 - hosts: all
   pre_tasks:
     - include_vars: vars/secrets.yml
+      tags: always
   roles:
     - rpi.alarm
     - rpi.nextcloud
