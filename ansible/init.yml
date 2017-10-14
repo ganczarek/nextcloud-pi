@@ -1,0 +1,53 @@
+---
+
+- hosts: all
+  gather_facts: false
+  pre_tasks:
+    - name: Install Python for Ansible
+      raw: bash -c "test -e /usr/bin/python || (pacman -S --noconfirm python)"
+      register: output
+      changed_when:
+      - output.stdout != ""
+      - output.stdout != "\r\n"
+
+    - name: Gathering Facts
+      setup:
+
+  tasks:
+    - name: Install sudo
+      pacman:
+        name: sudo
+
+    - name: Make sure 'wheel' group exists
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to sudo without a pass
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+
+    - name: Add alarm to wheel group
+      user:
+        name: deployer
+        groups: wheel
+        append: yes
+        state: present
+
+    - name: Disable SSH password authentication
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        state: present
+        regexp: '^[#\s]*PasswordAuthentication.*$'
+        line: 'PasswordAuthentication no'
+        backrefs: yes
+      notify: restart sshd
+
+  handlers:
+    - name: restart sshd
+      systemd:
+        name: sshd
+        state: restarted
