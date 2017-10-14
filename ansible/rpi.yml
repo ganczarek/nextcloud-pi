@@ -1,0 +1,7 @@
+---
+
+- hosts: all
+  pre_tasks:
+    - include_vars: vars/secrets.yml
+  roles:
+    - rpi.alarm

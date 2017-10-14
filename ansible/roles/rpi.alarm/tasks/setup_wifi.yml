@@ -1,0 +1,24 @@
+- name: Install NetworkManager
+  become: yes
+  pacman:
+    name: "{{ item }}"
+  with_items:
+    - networkmanager
+
+- name: Enable and start NetworkManager
+  become: yes
+  systemd:
+    name: NetworkManager
+    enabled: yes
+    state: started
+
+- name: Start WiFi interface
+  become: yes
+  shell: ifconfig wlan0 up
+  changed_when: False
+
+- name: Setup WiFi connection
+  become: yes
+  shell: nmcli dev wifi connect {{ wifi_ssid }} password {{ wifi_pass }}
+  args:
+    creates: /etc/NetworkManager/system-connections/{{ wifi_ssid }}
