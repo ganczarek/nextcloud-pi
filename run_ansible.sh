@@ -9,5 +9,5 @@ if [ "$1" = "init" ]; then
         --extra-vars ansible_become_pass=root \
         ./ansible/init.yml
 else
-    ansible-playbook --inventory 'rpi3,' ./ansible/rpi.yml
+    ansible-playbook --inventory 'rpi3,' ./ansible/rpi.yml "$@"
 fi

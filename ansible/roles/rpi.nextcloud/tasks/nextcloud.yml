@@ -1,0 +1,4 @@
+- name: Install Nextcloud
+  become: yes
+  pacman:
+    name: nextcloud

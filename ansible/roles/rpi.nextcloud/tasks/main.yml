@@ -1,0 +1,9 @@
+- name: Install Nextcloud
+  import_tasks: nextcloud.yml
+  tags:
+    - nextcloud
+
+- name: Install Nginx
+  import_tasks: nginx.yml
+  tags:
+    - nginx
