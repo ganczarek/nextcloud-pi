@@ -1,0 +1,30 @@
+- name: Install MariaDB packages
+  pacman:
+    name: "{{ item }}"
+  with_items:
+    - mariadb
+    - mariadb-clients
+
+- name: Run mysql_install_db
+  shell: mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+  args:
+    creates: /var/lib/mysql
+
+- name: Enabled and start mariadb
+  systemd:
+    name: mariadb
+    enabled: true
+    state: started
+
+# Ansible mysql modules need too many dependencies (pip, gcc etc.). Therefore, run from shell.
+- name: Create 'nextcloud' database
+  shell: mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+  changed_when: false
+
+- name: Create 'nextcloud' user
+  shell: mysql -u root -e "CREATE USER IF NOT EXISTS nextcloud@localhost IDENTIFIED BY 'password';"
+  changed_when: false
+
+- name: Grant privilages to 'nextcloud' user
+  shell: mysql -u root -e "GRANT ALL PRIVILEGES ON nextcloud.* TO nextcloud@localhost;"
+  changed_when: false

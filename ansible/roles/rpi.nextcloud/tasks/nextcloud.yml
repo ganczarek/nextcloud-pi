@@ -2,3 +2,15 @@
   become: yes
   pacman:
     name: nextcloud
+
+- name: Enable PHP extensions for MySQL
+  become: yes
+  lineinfile:
+    dest: /etc/php/php.ini
+    state: present
+    regexp: '^[;\s]*extension={{ item }}.*$'
+    line: 'extension={{ item }}'
+    backrefs: yes
+  with_items:
+    - pdo_mysql.so
+    - mysqli.so

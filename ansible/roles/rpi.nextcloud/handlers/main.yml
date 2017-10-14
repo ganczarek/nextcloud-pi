@@ -3,3 +3,9 @@
   systemd:
     name: nginx
     state: restarted
+
+- name: restart mysql
+  become: yes
+  systemd:
+    name: mariadb
+    state: restarted

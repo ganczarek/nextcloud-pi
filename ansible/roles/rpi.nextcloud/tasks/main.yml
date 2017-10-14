@@ -1,3 +1,9 @@
+- name: Install MariaDB
+  become: true
+  import_tasks: mariadb.yml
+  tags:
+    - mariadb
+
 - name: Install Nextcloud
   import_tasks: nextcloud.yml
   tags:
